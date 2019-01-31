@@ -45,12 +45,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        unregisterReceiver(mReceiver);
-    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
         devices = findViewById(R.id.devices);
+    }
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
     }
 
     // Connects to bluetooth
@@ -99,17 +100,23 @@ public class MainActivity extends AppCompatActivity {
                         devices.addView(t);
                     }
                 }
-                if(b.startDiscovery())
-                {
-
-                }
+                b.startDiscovery();
             }
         }
     }
     // Starts running the app function
     public void startOnClick(View v)
     {
-
+        if(b.isDiscovering()) {
+            b.cancelDiscovery();
+        }
+        if(address != null)
+        {
+            //do the stuff
+            Intent i = new Intent(getApplicationContext(), StartActivity.class);
+            i.putExtra("Device", address);
+            startActivity(i);
+        }
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
